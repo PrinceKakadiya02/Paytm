@@ -1,5 +1,5 @@
 {
-  "name": "docs",
+  "name": "user-app",
   "version": "0.1.0",
   "type": "module",
   "private": true,
@@ -11,18 +11,22 @@
     "check-types": "next typegen && tsc --noEmit"
   },
   "dependencies": {
+    "@repo/prisma": "*",
     "@repo/ui": "*",
-    "next": "16.2.0",
+    "next": "^16.2.9",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "*",
     "@repo/typescript-config": "*",
+    "@tailwindcss/postcss": "^4.3.1",
     "@types/node": "^22.15.3",
     "@types/react": "19.2.2",
     "@types/react-dom": "19.2.2",
     "eslint": "^9.39.1",
+    "postcss": "^8.4.31",
+    "tailwindcss": "^4.3.1",
     "typescript": "5.9.2"
   }
 }

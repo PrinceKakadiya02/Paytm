@@ -16,9 +16,9 @@ This Turborepo includes the following packages/apps:
 
 ### Apps and Packages
 
-- `docs`: a [Next.js](https://nextjs.org/) app
+- `user-app`: a [Next.js](https://nextjs.org/) app
 - `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
+- `@repo/ui`: a stub React component library shared by both `web` and `user-app` applications
 - `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
 - `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
 
@@ -57,15 +57,15 @@ You can build a specific package by using a [filter](https://turborepo.dev/docs/
 With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
 
 ```sh
-turbo build --filter=docs
+turbo build --filter=user-app
 ```
 
 Without global `turbo`:
 
 ```sh
-npx turbo build --filter=docs
-npm exec turbo build --filter=docs
-npm exec turbo build --filter=docs
+npx turbo build --filter=user-app
+npm exec turbo build --filter=user-app
+npm exec turbo build --filter=user-app
 ```
 
 ### Develop

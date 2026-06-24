@@ -2,8 +2,18 @@
   "name": "@repo/typescript-config",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.3.1",
+    "next": "^16.2.9",
+    "next-auth": "^4.24.14",
+    "postcss": "^8.5.15",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "tailwindcss": "^4.3.1"
   }
 }

@@ -1,29 +1,47 @@
 "use server";
 
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth";
 import prisma from "@repo/prisma/client";
 
-export async  function createOnRampTransaction(amount: number, provider: string) {
-    const session = await  getServerSession(authOptions);
-    const token = Math.random().toString();
-    if (!session?.user || !session.user?.id) {
-        return {
-            message: "Unauthenticated request"
-        }
+import { authOptions } from "../auth";
+
+export async function createOnRampTransaction(
+  amount: number,
+  provider: string
+) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.id) {
+      return {
+        success: false,
+        message: "Unauthenticated request",
+      };
     }
+
+    const token = crypto.randomUUID();
+
     await prisma.onRampTransaction.create({
-        data: {
-            userId: Number(session?.user.id),
-            amount: amount,
-            status: "Processing",
-            startTime: new Date(),
-            provider,
-            token
-        }
-    })
+      data: {
+        userId: Number(session.user.id),
+        amount,
+        status: "Processing",
+        provider,
+        startTime: new Date(),
+        token,
+      },
+    });
 
     return {
-        message: "On Ramp Transaction added"
-    }
+      success: true,
+      message: "Transaction initiated successfully.",
+    };
+  } catch (error) {
+    console.error(error);
+
+    return {
+      success: false,
+      message: "Unable to initiate transaction.",
+    };
+  }
 }

@@ -12,16 +12,16 @@ export const OnP2PTransactions = ({
   transactions: Transaction[];
 }) => {
   return (
-    <Card title="Transactions">
-      {!transactions.length ? ( 
+    <Card title="Recent Transfers">
+      {!transactions.length ? (
         <div className="flex h-40 items-center justify-center text-gray-500">
-          No transactions yet.
+          No transfers yet.
         </div>
       ) : (
-        <div className="space-y-4">
-          {transactions.map((transaction, index) => (
+        <div className="space-y-3">
+          {transactions.map((transaction) => (
             <div
-              key={index}
+              key={`${transaction.timestamp.getTime()}-${transaction.amount}-${transaction.name}`}
               className="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-2 transition hover:bg-gray-100"
             >
               <div>
@@ -30,7 +30,7 @@ export const OnP2PTransactions = ({
                 </p>
 
                 <p className="text-sm font-semibold text-[#6a51a6]">
-                  {transaction.name}
+                  {transaction.name ?? "Unknown User"}
                 </p>
 
                 <p className="mt-1 text-sm text-gray-500">

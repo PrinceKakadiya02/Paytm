@@ -1,39 +1,68 @@
-import { Card } from "@repo/ui/card"
+import { Card } from "@repo/ui/card";
+
+type Transaction = {
+  time: Date;
+  amount: number;
+  status: string;
+  provider: string;
+};
 
 export const OnRampTransactions = ({
-    transactions
+  transactions,
 }: {
-    transactions: {
-        time: Date,
-        amount: number,
-        // TODO: Can the type of `status` be more specific?
-        status: string,
-        provider: string
-    }[]
+  transactions: Transaction[];
 }) => {
-    if (!transactions.length) {
-        return <Card title="Recent Transactions">
-            <div className="text-center pb-8 pt-8">
-                No Recent transactions
-            </div>
-        </Card>
-    }
-    return <Card title="Recent Transactions">
-        <div className="pt-2">
-            {transactions.map((t, index) => <div  key={index} className="flex justify-between">
-                <div>
-                    <div className="text-sm">
-                        {t.status === "Success"?"Received INR": t.status === "Failure"? "Failed INR": "Processing INR"}
-                    </div>
-                    <div className="text-slate-600 text-xs">
-                        {t.time.toDateString()}
-                    </div>
-                </div>
-                <div className="flex flex-col justify-center">
-                    + Rs {t.amount / 100}
+  if (!transactions.length) {
+    return (
+      <Card title="Recent Transactions">
+        <div className="py-8 text-center text-slate-500">
+          No recent transactions
+        </div>
+      </Card>
+    );
+  }
+
+  const sortedTransactions = [...transactions].sort(
+    (a, b) => b.time.getTime() - a.time.getTime()
+  );
+
+  return (
+    <Card title="Recent Transactions">
+      <div className="pt-2 space-y-4">
+        {sortedTransactions.map((transaction) => {
+          const title =
+            transaction.status === "Success"
+              ? "Received INR"
+              : transaction.status === "Failure"
+              ? "Failed INR"
+              : "Processing INR";
+
+          return (
+            <div
+              key={`${transaction.time.getTime()}-${transaction.provider}-${transaction.amount}`}
+              className="flex items-center justify-between border-b border-slate-200 pb-3 last:border-none"
+            >
+              <div>
+                <div className="text-sm font-medium">
+                  {title}
                 </div>
 
-            </div>)}
-        </div>
+                <div className="text-xs text-slate-500">
+                  {transaction.provider}
+                </div>
+
+                <div className="text-xs text-slate-500">
+                  {transaction.time.toLocaleString()}
+                </div>
+              </div>
+
+              <div className="font-medium">
+                + ₹{(transaction.amount / 100).toFixed(2)}
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </Card>
-}
+  );
+};

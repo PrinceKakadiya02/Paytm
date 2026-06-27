@@ -1,48 +1,119 @@
-"use client"
+"use client";
+
+import { useState } from "react";
+
 import { Button } from "@repo/ui/button";
 import { Card } from "@repo/ui/card";
-import { Center } from "@repo/ui/center";
 import { Select } from "@repo/ui/select";
-import { useState } from "react";
 import { TextInput } from "@repo/ui/textinput";
-import { createOnRampTransaction } from "../lib/actions/createOnRampTransaction";
-import { clearAllModuleContexts } from "next/dist/server/lib/render-server";
 
-const SUPPORTED_BANKS = [{
+import { createOnRampTransaction } from "../lib/actions/createOnRampTransaction";
+
+const SUPPORTED_BANKS = [
+  {
     name: "HDFC Bank",
-    redirectUrl: "https://netbanking.hdfcbank.com"
-}, {
+    redirectUrl: "https://netbanking.hdfcbank.com",
+  },
+  {
     name: "Axis Bank",
-    redirectUrl: "https://www.axisbank.com/"
-}];
+    redirectUrl: "https://www.axisbank.com/",
+  },
+] ;
 
 export const AddMoney = () => {
-    const [redirectUrl, setRedirectUrl] = useState(SUPPORTED_BANKS[0]?.redirectUrl);
-    const [amount, setAmount] = useState(0);
-    const [provider, setProvider] = useState(SUPPORTED_BANKS[0]?.name || "")
-    return (<Card title="Add Money">
-    <div className="w-full">
-        <TextInput label={"Amount"} placeholder={"Amount"} onChange={(value) => {
-            setAmount(Number(value))
-        }} />
+  const [amount, setAmount] = useState(0);
+
+  const [provider, setProvider] = useState<string>(
+    SUPPORTED_BANKS[0]?.name ?? ""
+  );
+
+  const [redirectUrl, setRedirectUrl] = useState<string>(
+    SUPPORTED_BANKS[0]?.redirectUrl ?? ""
+  );
+
+  const [loading, setLoading] = useState(false);
+
+  const [error, setError] = useState("");
+
+  const handleAddMoney = async () => {
+    setError("");
+
+    if (amount <= 0) {
+      setError("Please enter a valid amount.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const response = await createOnRampTransaction(
+        amount * 100,
+        provider
+      );
+
+      if (!response.success) {
+        setError(response.message);
+        return;
+      }
+
+      window.location.href = redirectUrl;
+    } catch (error) {
+      console.error(error);
+
+      setError("Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Card title="Add Money">
+      <div className="w-full">
+        <TextInput
+          label="Amount"
+          placeholder="Amount"
+          type="number"
+          value={amount === 0 ? "" : amount.toString()}
+          onChange={(value) => setAmount(Number(value))}
+          disabled={loading}
+        />
+
         <div className="py-4 text-left">
-            Bank
+          Bank
         </div>
-        <Select onSelect={(value) => {
-            setRedirectUrl(SUPPORTED_BANKS.find(x => x.name === value)?.redirectUrl || "")
-            setProvider(SUPPORTED_BANKS.find(x =>x.name === value)?.name || "")
-        }} options={SUPPORTED_BANKS.map(x => ({
-            key: x.name,
-            value: x.name
-        }))} />
+
+        <Select
+          onSelect={(value) => {
+            const bank = SUPPORTED_BANKS.find(
+              (b) => b.name === value
+            );
+
+            if (!bank) return;
+
+            setProvider(bank.name);
+            setRedirectUrl(bank.redirectUrl);
+          }}
+          options={SUPPORTED_BANKS.map((bank) => ({
+            key: bank.name,
+            value: bank.name,
+          }))}
+        />
+
+        {error && (
+          <div className="pt-3 text-sm text-red-600">
+            {error}
+          </div>
+        )}
+
         <div className="flex justify-center pt-4">
-            <Button onClick={async () => {
-                await createOnRampTransaction(amount * 100, provider)
-                window.location.href = redirectUrl || "";
-            }}>
-            Add Money
-            </Button>
+          <Button
+            disabled={loading || amount <= 0}
+            onClick={handleAddMoney}
+          >
+            {loading ? "Redirecting..." : "Add Money"}
+          </Button>
         </div>
-    </div>
-</Card>)
-}
+      </div>
+    </Card>
+  );
+};

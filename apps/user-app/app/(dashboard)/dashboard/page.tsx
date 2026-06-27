@@ -21,7 +21,6 @@ async function getDashboardData() {
       p2pTransactions: [],
     };
   }
-
   const userId = Number(session.user.id);
 
   const [balance, onRampTransactions, p2pTransactions] =
